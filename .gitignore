@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.ogg
+*.mp3
+audios/
+recordatorios_por_usuario/
+credenciales/
