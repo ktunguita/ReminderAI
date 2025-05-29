@@ -1,0 +1,7 @@
+fly.toml
+.venv
+__pycache__/
+*.pyc
+.env
+audios/
+recordatorios_por_usuario/
