@@ -1,13 +1,5 @@
-# fly.toml app configuration file generated for reminderia-telegram-bot on 2025-05-29T04:21:14-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'reminderia-telegram-bot'
 primary_region = 'scl'
-
-[build]
-  builder = 'paketobuildpacks/builder:base'
 
 [env]
   PORT = '8080'

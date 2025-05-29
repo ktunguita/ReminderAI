@@ -26,9 +26,9 @@ os.makedirs(RECORDATORIOS_DIR, exist_ok=True)
 
 
 # Cargar credenciales desde archivo .json
-GOOGLE_CLOUD_CREDENTIALS = os.getenv("GOOGLE_CLOUD_CREDENTIALS")  # Ruta local al JSON
+GOOGLE_APPLICATION_CREDENTIALS_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")  # Ruta local al JSON
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
 # Inicializar cliente de Google Cloud Storage
-storage_client = storage.Client.from_service_account_json(GOOGLE_CLOUD_CREDENTIALS)
+storage_client = storage.Client.from_service_account_json(GOOGLE_APPLICATION_CREDENTIALS_JSON)
 gcs_bucket = storage_client.bucket(GCS_BUCKET_NAME)
