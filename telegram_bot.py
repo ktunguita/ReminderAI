@@ -1,7 +1,6 @@
 #telegram_bot.py
 
 import uuid
-import asyncio
 #import logging
 import os
 from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters
@@ -87,23 +86,19 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
         respuesta = texto_transcripto.get("respuesta_texto", "❓ No entendí tu mensaje.")
         await update.message.reply_text(respuesta)
 
-async def iniciar_bot():
-    print("🤖 Inicializando bot de Telegram...")
+print("🤖 Inicializando bot de Telegram...")
 
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-    app.add_handler(MessageHandler(filters.VOICE, handle_audio))
-    app.add_handler(CommandHandler("start", handle_start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+app.add_handler(MessageHandler(filters.VOICE, handle_audio))
+app.add_handler(CommandHandler("start", handle_start))
 
-    print("✅ Bot de Telegram iniciado correctamente.")
-    print("🟢 Bot corriendo. Esperando mensajes...")
+print("✅ Bot de Telegram iniciado correctamente.")
+print("🟢 Bot corriendo. Esperando mensajes...")
 
-    # Revisar recordatorios vencidos al iniciar
-    await revisar_y_lanzar_recordatorios(app.bot)
+# Configurar la tarea periódica
+async def periodic_task(context):
+    await tarea_periodica_recordatorios(app.bot)
 
-    # Lanzar tarea periódica
-    asyncio.create_task(tarea_periodica_recordatorios(app.bot))
-
-    # Iniciar bot
-    await app.run_polling(drop_pending_updates=True) # <- Ignora los mensajes previos al arranque
+app.job_queue.run_repeating(periodic_task, interval=600, first=10)

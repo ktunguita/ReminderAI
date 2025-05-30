@@ -7,9 +7,9 @@ primary_region = 'scl'
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = false  # <-- mantiene el bot corriendo siempre
+  auto_stop_machines = false  # Mantiene el bot activo
   auto_start_machines = true
-  min_machines_running = 1  # <-- fuerza solo una máquina activa
+  min_machines_running = 1 #ferza a
   processes = ['app']
 
 [[vm]]

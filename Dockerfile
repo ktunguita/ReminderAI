@@ -7,21 +7,21 @@ WORKDIR /app
 # Copia los archivos del proyecto al contenedor
 COPY . .
 
-# Instala las dependencias
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+# Instala dependencias del sistema necesarias (incluye tzdata y ffmpeg)
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala dependencias del sistema (incluye ffmpeg)
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# Establece la zona horaria (Argentina)
+ENV TZ=America/Argentina/Buenos_Aires
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Especifica la variable de entorno (opcional, si no está ya seteada)
+# Instala dependencias de Python
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Evita el buffering en logs
 ENV PYTHONUNBUFFERED=1
 
-# Establecer zona horaria en el contenedor
-ENV TZ=America/Argentina/Buenos_Aires
-RUN apt-get update && apt-get install -y tzdata && \
-    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
-
-# Comando para ejecutar tu bot
+# Comando para ejecutar el bot
 CMD ["python", "main.py"]
