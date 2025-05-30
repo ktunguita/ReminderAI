@@ -6,6 +6,8 @@ import tempfile
 from pydub import AudioSegment
 from config import OPENAI_API_KEY
 from modulo_openai_texto import interpretar_con_chatgpt
+from logger_config import setup_logger
+logger = setup_logger()
 
 # Configurar clave de API
 openai.api_key = OPENAI_API_KEY
@@ -33,14 +35,14 @@ def transcribir_y_interpretar_audio(ruta_ogg):
         # Eliminar archivo mp3 temporal
         os.remove(ruta_mp3)
 
-        print(f"[DEBUG] Transcripción obtenida: {transcripcion}")
+        logger.info(f"[DEBUG] Transcripción obtenida: {transcripcion}")
 
         texto = transcripcion.get("text", "") if isinstance(transcripcion, dict) else str(transcripcion)
-        print(f"[DEBUG] el tipo de dato que se le enviar a chatgpt es: {type(texto)}")
+        #logger.info(f"[DEBUG] el tipo de dato que se le enviar a chatgpt es: {type(texto)}")
         return interpretar_con_chatgpt(texto)
 
     except Exception as e:
-        print(f"❌ Error al transcribir o interpretar audio: {e}")
+        logger.exception(f"❌ Error al transcribir o interpretar audio: {e}")
         return {
             "es_recordatorio": False,
             "respuesta_texto": "❌ Hubo un error al procesar tu audio. Intenta nuevamente."

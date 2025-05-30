@@ -1,33 +1,27 @@
 #telegram_bot.py
 
 import uuid
-#import logging
 import os
-from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters
-from telegram.ext import ContextTypes
+from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from telegram import Update
-from telegram.ext import ContextTypes, MessageHandler, filters
 from config import AUDIO_FOLDER, TELEGRAM_BOT_TOKEN
 from modulo_openai_texto import interpretar_con_chatgpt
 from modulo_openai_audio import transcribir_y_interpretar_audio
-from modulo_recordatorios import guardar_recordatorio, revisar_y_lanzar_recordatorios, tarea_periodica_recordatorios
+from modulo_recordatorios import guardar_recordatorio, tarea_periodica_recordatorios
+from logger_config import setup_logger
+logger = setup_logger()
  
-
-# Configurar logging
-#logging.basicConfig(level=logging.INFO)
-#logger = logging.getLogger(__name__)
-
 async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("👋 ¡Hola! Enviame un mensaje o un audio.")
 
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
-    print(f"📩 Texto recibido: {user_text}")
+    logger.info(f"📩 Texto recibido: {user_text}")
     chat_id = update.message.chat_id
 
     resultado = interpretar_con_chatgpt(user_text)
-    print(f"[DEBUG] Resultado interpretado: {resultado} ({type(resultado)})")
+    logger.info(f"[DEBUG] Resultado interpretado: {resultado} ({type(resultado)})")
 
     if isinstance(resultado, dict) and resultado.get("es_recordatorio"):
         recordatorios = resultado.get("recordatorios", [])
@@ -69,7 +63,7 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ No pude transcribir tu audio.")
         return
 
-    print(f"📝 Texto transcripto: {texto_transcripto}")
+    logger.info(f"📝 Texto transcripto: {texto_transcripto}")
 
     if isinstance(texto_transcripto, dict) and texto_transcripto.get("es_recordatorio"):
         recordatorios = texto_transcripto.get("recordatorios", [])
@@ -86,18 +80,18 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
         respuesta = texto_transcripto.get("respuesta_texto", "❓ No entendí tu mensaje.")
         await update.message.reply_text(respuesta)
 
-print("🤖 Inicializando bot de Telegram...")
+logger.info("🤖 Inicializando bot de Telegram...")
 
 # Crear la aplicación con soporte para JobQueue
-app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).job_queue_enabled().build()
+app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).post_init(Application.initialize_job_queue).build()
 
 # Agregar handlers
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 app.add_handler(MessageHandler(filters.VOICE, handle_audio))
 app.add_handler(CommandHandler("start", handle_start))
 
-print("✅ Bot de Telegram iniciado correctamente.")
-print("🟢 Bot corriendo. Esperando mensajes...")
+logger.info("✅ Bot de Telegram iniciado correctamente.")
+logger.info("🟢 Bot corriendo. Esperando mensajes...")
 
 # Tarea periódica
 async def periodic_task(context):

@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 from config import OPENAI_API_KEY, RUTA_PROMPT_SISTEMA
 from openai import OpenAIError, AuthenticationError, APIConnectionError
+from logger_config import setup_logger
+logger = setup_logger()
 
 # Configurar la clave
 openai.api_key = OPENAI_API_KEY
@@ -24,10 +26,10 @@ def cargar_prompt_sistema():
 
 
 def interpretar_con_chatgpt(mensaje_usuario: str) -> dict:
-    print(f"[DEBUG] Texto recibido por interpretar_con_chatgpt: '{mensaje_usuario}'")
+    logger.info(f"[DEBUG] Texto recibido por interpretar_con_chatgpt: '{mensaje_usuario}'")
     
     if mensaje_usuario.strip().lower() == "_test_":
-        print("✅ Conexión con ChatGPT establecida correctamente (modo prueba, sin tokens).")
+        logger.info("✅ Conexión con ChatGPT establecida correctamente (modo prueba, sin tokens).")
         return {
             "es_recordatorio": False,
             "respuesta_texto": "✅ Conexión con ChatGPT establecida correctamente (modo prueba, sin tokens)."
@@ -45,13 +47,13 @@ def interpretar_con_chatgpt(mensaje_usuario: str) -> dict:
             temperature=0.2
         )
         contenido = respuesta.choices[0].message.content
-        print(f"[DEBUG] Respuesta cruda de ChatGPT:\n{contenido}")
+        logger.info(f"[DEBUG] Respuesta cruda de ChatGPT:\n{contenido}")
 
         # Intentamos parsear el JSON (aunque venga con espacios u otros caracteres)
         return json.loads(contenido)
     
     except json.JSONDecodeError as e:
-        print(f"❌ Error al decodificar JSON: {e}")
+        logger.exception(f"❌ Error al decodificar JSON: {e}")
         return {"es_recordatorio": False, "respuesta_texto": "No pude interpretar tu mensaje correctamente."}
         
 
