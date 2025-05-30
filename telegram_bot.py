@@ -88,8 +88,10 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 print("🤖 Inicializando bot de Telegram...")
 
-app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+# Crear la aplicación con soporte para JobQueue
+app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).job_queue_enabled().build()
 
+# Agregar handlers
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 app.add_handler(MessageHandler(filters.VOICE, handle_audio))
 app.add_handler(CommandHandler("start", handle_start))
@@ -97,7 +99,7 @@ app.add_handler(CommandHandler("start", handle_start))
 print("✅ Bot de Telegram iniciado correctamente.")
 print("🟢 Bot corriendo. Esperando mensajes...")
 
-# Configurar la tarea periódica
+# Tarea periódica
 async def periodic_task(context):
     await tarea_periodica_recordatorios(app.bot)
 
