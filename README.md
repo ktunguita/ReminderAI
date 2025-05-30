@@ -1,2 +1,1 @@
-"# ReminderAI" 
-"# ReminderAI" 
+"# ReminderAI - Version estable con polling y gcs" 
