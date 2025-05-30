@@ -29,6 +29,16 @@ os.makedirs(RECORDATORIOS_DIR, exist_ok=True)
 GOOGLE_APPLICATION_CREDENTIALS_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")  # Ruta local al JSON
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 
-# Inicializar cliente de Google Cloud Storage
-storage_client = storage.Client.from_service_account_json(GOOGLE_APPLICATION_CREDENTIALS_JSON)
+# --- Inicializar cliente de Google Cloud Storage ---
+# Leer secreto del entorno
+google_creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+
+# Guardar en archivo temporal si aún no existe
+CRED_PATH = "/app/credenciales_gcs.json"
+if google_creds_json and not os.path.exists(CRED_PATH):
+    with open(CRED_PATH, "w") as f:
+        f.write(google_creds_json)
+
+# Crear el cliente de Google Storage
+storage_client = storage.Client.from_service_account_json(CRED_PATH)
 gcs_bucket = storage_client.bucket(GCS_BUCKET_NAME)
