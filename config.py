@@ -8,8 +8,8 @@ from google.cloud import storage
 load_dotenv()
 
 # Configuracion de tolerancia
-INTERVALO_REVISION_RECORDATORIOS_SEGUNDOS = 600
-TIEMPO_TOLERANCIA_MINUTOS = 6
+INTERVALO_REVISION_RECORDATORIOS_SEGUNDOS = 1800
+TIEMPO_TOLERANCIA_MINUTOS = 14
 
 # Cargar Token de telegram y API de openai
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -28,6 +28,9 @@ os.makedirs(RECORDATORIOS_DIR, exist_ok=True)
 # Cargar credenciales desde archivo .json
 GOOGLE_APPLICATION_CREDENTIALS_JSON = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")  # Ruta local al JSON
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+
+# Cargar la URL BASE de la app de fly.io
+URL_BASE = os.environ.get("WEBHOOK_URL", "https://reminderai-bot-telegram.fly.dev")
 
 # --- Inicializar cliente de Google Cloud Storage ---
 # Leer secreto del entorno

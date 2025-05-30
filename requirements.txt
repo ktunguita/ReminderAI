@@ -1,6 +1,7 @@
 python-dotenv
-python-telegram-bot[job-queue]
+python-telegram-bot[job-queue, webhooks]
 openai
 google-cloud-storage
 pydub
 tzdata
+aiohttp
