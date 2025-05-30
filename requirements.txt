@@ -4,3 +4,4 @@ openai
 google-cloud-storage
 pydub
 nest_asyncio
+tzdata
