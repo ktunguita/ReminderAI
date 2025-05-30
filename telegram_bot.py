@@ -11,6 +11,7 @@ from telegram.ext import (
     ContextTypes,
     filters,
 )
+from telegram.error import TelegramError
 from config import AUDIO_FOLDER, TELEGRAM_BOT_TOKEN
 from modulo_openai_texto import interpretar_con_chatgpt
 from modulo_openai_audio import transcribir_y_interpretar_audio
@@ -88,6 +89,11 @@ async def periodic_task(context: ContextTypes.DEFAULT_TYPE):
     await tarea_periodica_recordatorios(app.bot)
 
 app.job_queue.run_repeating(periodic_task, interval=600, first=10)
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
+    logger.error(f"❌ Error manejado: {context.error}", exc_info=True)
+
+app.add_error_handler(error_handler)
 
 logger.info("✅ Bot de Telegram iniciado correctamente.")
 logger.info("🟢 Bot corriendo. Esperando mensajes...")
