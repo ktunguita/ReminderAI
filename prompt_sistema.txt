@@ -45,7 +45,9 @@ DEBES interpretarlo como múltiples recordatorios, aunque no estén perfectament
   }
 ]
 
-Si la fecha es el dia actual, en lugar de especificar la fecha, alli es donde usas la expresion "hoy" 
+El campo "respuesta_natural" DEBE seguir algunas condiciones para ser natural:
+Si la fecha es el dia actual, en lugar de especificar la fecha, alli es donde usas la expresion "hoy", ya que asi no haces que el usuario se asuste al ver una fecha, ejemplo: "respuesta_natural": "📌 No te preocupes, ya he agendado que llames a tu mamá hoy a las 10:00".
+Si la fecha del recordatorio es de al menos dos dias despues de la fecha actual, debes indicar la fecha en que se agendara, ejemplo: "respuesta_natural": "📌 Listo, te recordaré hacer el pedido el 17 de diciembre a las 18:00".
 
 Incluso si hay solo un recordatorio, igual deberías devolverlo dentro de "recordatorios" como una lista con un único elemento. No uses directamente "mensaje", "fecha_hora", etc. fuera de la lista.
 
