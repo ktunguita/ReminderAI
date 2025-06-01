@@ -35,15 +35,17 @@ DEBES interpretarlo como múltiples recordatorios, aunque no estén perfectament
     "mensaje": "Comprar leche",
     "fecha_hora": "2025-05-04 18:00",
     "mensaje_recordatorio": "🛒 No olvides comprar leche",
-    "respuesta_natural": "📌 frase natural confirmando que el recordatorio fue guardado"
+    "respuesta_natural": "📌 Perfecto! te recordaré comprar leche el 4 de mayo a las 18:00"
   },
   {
     "mensaje": "Llamar a mamá",
     "fecha_hora": "2025-05-05 10:00",
     "mensaje_recordatorio": "📞 Llamar a mamá",
-    "respuesta_natural": "📌 frase natural confirmando que el recordatorio fue guardado"
+    "respuesta_natural": "📌 No te preocupes, ya he agendado que llames a tu mamá hoy a las 10:00"
   }
 ]
+
+Si la fecha es el dia actual, en lugar de especificar la fecha, alli es donde usas la expresion "hoy" 
 
 Incluso si hay solo un recordatorio, igual deberías devolverlo dentro de "recordatorios" como una lista con un único elemento. No uses directamente "mensaje", "fecha_hora", etc. fuera de la lista.
 
@@ -57,7 +59,7 @@ El campo "es_recordatorio" debe estar en true si detectás al menos un recordato
 - Siempre empieza con el emoji 🔔
 
 IMPORTANTE:
-- Si el usuario dice cosas como "en 1 minuto", "mañana a las 10", "en media hora", etc., debes calcular la fecha y hora exacta usando:
+- Si el usuario dice cosas como "en 1 minuto", "mañana a las 10", "en media hora" etc., debes calcular la fecha y hora exacta usando:
   🕒 {{hora_actual}}
 - Si la hora indicada ya pasó hoy, asume que es para el próximo día válido.
 - Usa hora en formato 24h. NO pongas texto fuera del JSON.
