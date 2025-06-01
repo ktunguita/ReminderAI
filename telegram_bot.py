@@ -2,6 +2,7 @@
 
 import uuid
 import os
+from datetime import datetime, timedelta
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -21,6 +22,25 @@ logger = setup_logger()
 
 # --- Handlers ---
 
+async def procesar_resultado_recordatorios(update, chat_id, resultado):
+    if isinstance(resultado, dict) and resultado.get("es_recordatorio"):
+        for recordatorio in resultado.get("recordatorios", []):
+            fecha_hora = recordatorio.get("fecha_hora")
+            try:
+                dt_recordatorio = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M")
+                if dt_recordatorio < datetime.now() + timedelta(minutes=20):
+                    await update.message.reply_text("⚠️ El recordatorio está demasiado cerca en el tiempo. Intentá al menos 20 minutos después de ahora.")
+                    continue
+            except Exception:
+                await update.message.reply_text("❌ Hubo un error interpretando la fecha del recordatorio.")
+                continue
+
+            guardar_recordatorio(chat_id, recordatorio["mensaje_recordatorio"], fecha_hora)
+            respuesta = recordatorio.get("respuesta_natural") or f'📌 Recordatorio agendado:\n"{recordatorio["mensaje"]}"\n🕒 Fecha y hora: {fecha_hora}'
+            await update.message.reply_text(respuesta)
+    else:
+        await update.message.reply_text(resultado.get("respuesta_texto", "❓ No entendí tu mensaje."))
+
 async def handle_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("👋 ¡Hola! Enviame un mensaje o un audio.")
 
@@ -32,13 +52,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     resultado = interpretar_con_chatgpt(user_text)
     logger.info(f"[DEBUG] Resultado interpretado: {resultado} ({type(resultado)})")
 
-    if isinstance(resultado, dict) and resultado.get("es_recordatorio"):
-        for recordatorio in resultado.get("recordatorios", []):
-            guardar_recordatorio(chat_id, recordatorio["mensaje_recordatorio"], recordatorio["fecha_hora"])
-            respuesta = recordatorio.get("respuesta_natural") or f'📌 Recordatorio agendado:\n"{recordatorio["mensaje"]}"\n🕒 Fecha y hora: {recordatorio["fecha_hora"]}'
-            await update.message.reply_text(respuesta)
-    else:
-        await update.message.reply_text(resultado.get("respuesta_texto", "❓ No entendí tu mensaje."))
+    await procesar_resultado_recordatorios(update, chat_id, resultado)
 
 async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voice = update.message.voice
@@ -64,13 +78,7 @@ async def handle_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     logger.info(f"📝 Texto transcripto: {resultado}")
 
-    if isinstance(resultado, dict) and resultado.get("es_recordatorio"):
-        for recordatorio in resultado.get("recordatorios", []):
-            guardar_recordatorio(chat_id, recordatorio["mensaje_recordatorio"], recordatorio["fecha_hora"])
-            respuesta = recordatorio.get("respuesta_natural") or f'📌 Recordatorio agendado:\n"{recordatorio["mensaje"]}"\n🕒 Fecha y hora: {recordatorio["fecha_hora"]}'
-            await update.message.reply_text(respuesta)
-    else:
-        await update.message.reply_text(resultado.get("respuesta_texto", "❓ No entendí tu mensaje."))
+    await procesar_resultado_recordatorios(update, chat_id, resultado)
 
 # --- Inicialización del bot ---
 

@@ -44,7 +44,7 @@ def interpretar_con_chatgpt(mensaje_usuario: str) -> dict:
                 {"role": "system", "content": prompt_sistema},
                 {"role": "user", "content": mensaje_usuario}
             ],
-            temperature=0.2
+            temperature=0.3
         )
         contenido = respuesta.choices[0].message.content
         logger.info(f"[DEBUG] Respuesta cruda de ChatGPT:\n{contenido}")
