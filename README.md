@@ -1,1 +1,1 @@
-"# ReminderAI - Version estable con polling y gcs" 
+"# ReminderAI - Version estable sin polling, usando webhook y gcs" 
